@@ -1,0 +1,11 @@
+{
+  "menu": [
+    {
+      "name": "yuan",
+      "order": "Mie Bakso",
+      "count": 1,
+      "price": 10000,
+      "id": 1
+    }
+  ]
+}
