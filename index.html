@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta nama="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table, tr, th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h3>Baso Japri</h3>
+    <p>Lorem ipsum sit amet consectetur, adipisicing elit.</p>
+    <div>
+
+        <p>Nama Pemesan : <input id="nama" type="text" placeholder="Isi Nama Lengkap disini...."> </p>
+        
+    </div>
+    <table style="margin-top: 10px">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Pemesan</th>
+                <th>Jumlah</th>
+                <th>Harga</th>
+                <th>Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id = "result"></tbody>
+    </table>
+    <script src ="./axios.min.js"></script>
+    <script>
+
+        const editData = (id, nama, pemesan, jumlah, harga, total) => {                  
+            document.getElementById('nama').value = nama;
+            document.getElementById('pemesan').value = pemesan;
+            document.getElementById('jumlah').value = jumlah;
+            document.getElementById('harga').value = harga;
+            document.getElementById('total').value = total;
+            document.getElementById('aksi').value = aksi;
+            document.getElementById('button').innerText = 'Ubah';
+            document.getElementById('button').setAttribute('onclick', `updateData(${id})`);
+        }
+
+        const updateData = async (id) => {                  
+            let namaForm = document.getElementById('nama').value;
+            let pemesanForm = document.getElementById('pemesan').value;
+            let jumlahForm = document.getElementById('jumlah').value;
+            let hargaForm = document.getElementById('harga').value;
+            let totalForm = document.getElementById('total').value;
+            let aksiForm = document.getElementById('aksi').value;
+            let text = 'Yakin akan mengubah data?';
+            if (confirm(text) == true) {
+            await axios.patch (`http://localhost:3000/menu/${id}`,{
+            nama : namaForm,
+            pemesan : pemesanForm,
+            jumlah : jumlahForm,
+            harga : hargaForm,
+            total : totalForm,
+            aksi : aksiForm
+            })
+        }
+    }
+
+        const saveData = async () => {                  
+            let namaForm = document.getElementById('nama').value;
+            let pemesanForm = document.getElementById('pemesan').value;
+            let jumlahForm = document.getElementById('jumlah').value;
+            let hargaForm = document.getElementById('harga').value;
+            let totalForm = document.getElementById('total').value;
+            let aksiForm = document.getElementById('aksi').value;
+            await axios.post (`http://localhost:3000/menu`,{
+            nama : namaForm,
+            pemesan : pemesanForm,
+            jumlah : jumlahForm,
+            harga : hargaForm,
+            aksi : aksiForm
+        })
+        .then ((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+        }
+
+
+        const deleteData = async (id) => {
+            let text = "Yakin akan menghapus data?";
+            if (confirm(text) == true) {
+                await axios.delete (`http://localhost:3000/orders/${id}`)
+            .then ((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+            } 
+        }
+
+        const getData = async () => {
+            await axios.get(`http://localhost:3000/orders`)
+            .then((response) => {
+                let bucket = ``;
+                let total = 0;
+                let menu = response.data;
+
+                if(menu.length > 0){
+                    for (let i = 0; i < menu.length; i++) {
+                    bucket += `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${menu[i].name}</td>
+                <td>${menu[i].order}</td>
+                <td>${menu[i].count}</td>
+                <td>${menu[i].price}</td>
+                <td>
+
+                    <button onclick="Data(${menu[i].id})">batal</button>
+                </td>
+            </tr> 
+                  `  
+                }
+            } else {
+                bucket += `
+                <tr>
+                <td colspan="7" style ="text-align: center">Data Tidak Ditemukan</td>
+                </tr>
+            `      
+                }
+                document.getElementById('result').innerHTML = bucket;
+            })
+            .catch((error) => {
+                let bucket = `
+                <tr>
+                <td colspan="7" style ="text-align: center">${error.message}</td>
+                </tr>
+            `
+            document.getElementById('result').innerHTML = bucket;
+            });
+        }
+        getData();
+    </script>
+</body>
+
+</html>
